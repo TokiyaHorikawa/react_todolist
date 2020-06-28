@@ -17,7 +17,6 @@ class TodoStore extends EventEmitter {
     ];
   }
 
-  // TODOリストに追加する
   createTodo(text) {
     const id = Date.now();
 
@@ -26,6 +25,11 @@ class TodoStore extends EventEmitter {
     });
 
     this.emit('change');
+  }
+
+  receiveTodos(todos) {
+    this.todos = todos;
+    this.emit("change");
   }
 
   // すべてを取得
@@ -38,8 +42,10 @@ class TodoStore extends EventEmitter {
       case "CREATE_TODO":
         this.createTodo(action.text);
         break;
+      case "RECEIVE_TODOS":
+        this.receiveTodos(action.todos)
       default:
-        console.log('no action');
+        console.log('no action', action.type);
         break;
     }
   }
@@ -47,5 +53,5 @@ class TodoStore extends EventEmitter {
 
 const todoStore = new TodoStore;
 dispatcher.register(todoStore.handleActions.bind(todoStore))
-
+window.dispatcher = dispatcher;
 export default todoStore;
