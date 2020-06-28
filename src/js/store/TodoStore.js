@@ -1,4 +1,5 @@
 import { EventEmitter } from "events";
+import dispatcher from "../dispatcher";
 
 class TodoStore extends EventEmitter {
   constructor() {
@@ -16,6 +17,7 @@ class TodoStore extends EventEmitter {
     ];
   }
 
+  // TODOリストに追加する
   createTodo(text) {
     const id = Date.now();
 
@@ -26,13 +28,24 @@ class TodoStore extends EventEmitter {
     this.emit('change');
   }
 
+  // すべてを取得
   getAll() {
     return this.todos;
+  }
+
+  handleActions(action) {
+    switch (action.type) {
+      case "CREATE_TODO":
+        this.createTodo(action.text);
+        break;
+      default:
+        console.log('no action');
+        break;
+    }
   }
 }
 
 const todoStore = new TodoStore;
-// ブラウザのコンソールからデータを入力してみる実験
-window.todoStore = todoStore;
+dispatcher.register(todoStore.handleActions.bind(todoStore))
 
 export default todoStore;
