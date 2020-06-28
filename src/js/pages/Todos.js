@@ -7,20 +7,28 @@ import TodoStore from '../store/TodoStore';
 export default class Todos extends React.Component {
   constructor() {
     super();
+    this.getTodos = this.getTodos.bind(this);
     this.state = {
       todos: TodoStore.getAll()
     };
   }
 
   componentDidMount() {
-    TodoStore.on('change', () => {
-      this.setState({ todos: TodoStore.getAll() })
-    })
+    TodoStore.on('change', this.getTodos);
+    console.log('count', TodoStore.listenerCount("change"));
   }
 
-  // createTodo() {
-  //   TodoActions.createTodo("New Todo");
-  // }
+  // コンポーネントがマウント解除される時に呼ばれる
+  componentWillUnmount() {
+    console.log('work to componentWillUnmount');
+    TodoStore.removeListener('change', this.getTodos);
+  }
+
+  getTodos() {
+    this.setState({
+      todos: TodoStore.getAll()
+    });
+  }
 
   reloadTodos() {
     TodoActions.reloadTodos();
